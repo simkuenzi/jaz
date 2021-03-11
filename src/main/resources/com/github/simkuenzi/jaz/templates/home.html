@@ -11,8 +11,58 @@
         <h1>JAZ</h1>
     </div>
 
+    <div class="form">
+        <div class="form-row">
+            <div class="form-label"><label for="date">Datum</label></div>
+            <div class="form-input">
+                <input id="date" name="date" type="text" />
+            </div>
+        </div>
+        <div class="form-row-action">
+            <button type="button" name="add-date">+</button>
+        </div>
+    </div>
+    <div class="form">
+        <div class="form-row">
+            <div class="form-label"><label for="holiday">Feiertag</label></div>
+            <div class="form-input">
+                <select id="holiday" name="holiday"></select>
+            </div>
+        </div>
+        <div class="form-row-action">
+            <button type="button" name="add-holiday-date">+</button>
+        </div>
+    </div>
     <form method="post">
-        Content
+        <div class="form-row">
+            <div class="form-label"><label>Ausnahmen</label></div>
+            <div class="form-input">
+                Liste der Datümmer
+            </div>
+            <input type="hidden" id="exceptions" name="">
+        </div>
+        <div class="form-row">
+            <div class="form-label"><label>Arbeitstage</label></div>
+            <div class="form-input">
+                <label for="monday">Montag</label>
+                <input id="monday" name="monday" type="checkbox">
+                <label for="tuesday">Dienstag</label>
+                <input id="tuesday" name="tuesday" type="checkbox">
+                <label for="wednesday">Mittwoch</label>
+                <input id="wednesday" name="wednesday" type="checkbox">
+                <label for="thursday">Donnerstag</label>
+                <input id="thursday" name="thursday" type="checkbox">
+                <label for="friday">Freitag</label>
+                <input id="friday" name="friday" type="checkbox">
+                <label for="saturday">Samstag</label>
+                <input id="saturday" name="saturday" type="checkbox">
+                <label for="sunday">Sonntag</label>
+                <input id="sunday" name="sunday" type="checkbox">
+            </div>
+        </div>
+        <div class="form-row-action">
+            <button type="submit" name="calculate">JAZ Berechnen</button>
+        </div>
     </form>
 
 
