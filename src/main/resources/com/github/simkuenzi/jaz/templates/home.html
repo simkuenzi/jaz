@@ -59,31 +59,31 @@
                 <div class="form-label"><label>Arbeitstage</label></div>
                 <div class="form-input">
                     <nobr>
-                        <input id="monday" name="monday" type="checkbox" checked>
+                        <input id="monday" name="monday" type="checkbox" th:checked="${monday}">
                         <label for="monday">Montag</label>
                     </nobr>
                     <nobr>
-                        <input id="tuesday" name="tuesday" type="checkbox" checked>
+                        <input id="tuesday" name="tuesday" type="checkbox" th:checked="${tuesday}">
                         <label for="tuesday">Dienstag</label>
                     </nobr>
                     <nobr>
-                        <input id="wednesday" name="wednesday" type="checkbox" checked>
+                        <input id="wednesday" name="wednesday" type="checkbox" th:checked="${wednesday}">
                         <label for="wednesday">Mittwoch</label>
                     </nobr>
                     <nobr>
-                        <input id="thursday" name="thursday" type="checkbox" checked>
+                        <input id="thursday" name="thursday" type="checkbox" th:checked="${thursday}">
                         <label for="thursday">Donnerstag</label>
                     </nobr>
                     <nobr>
-                        <input id="friday" name="friday" type="checkbox">
+                        <input id="friday" name="friday" type="checkbox" th:checked="${friday}">
                         <label for="friday">Freitag</label>
                     </nobr>
                     <nobr>
-                        <input id="saturday" name="saturday" type="checkbox">
+                        <input id="saturday" name="saturday" type="checkbox" th:checked="${saturday}">
                         <label for="saturday">Samstag</label>
                     </nobr>
                     <nobr>
-                        <input id="sunday" name="sunday" type="checkbox">
+                        <input id="sunday" name="sunday" type="checkbox" th:checked="${sunday}">
                         <label for="sunday">Sonntag</label>
                     </nobr>
                 </div>
@@ -93,6 +93,10 @@
             <button type="submit" name="calculate">JAZ Berechnen</button>
         </div>
     </form>
+
+    <p th:inline="text">
+        Im Jahr [[${year}]] würdest du [[${jazHours}]] Stunden arbeiten.
+    </p>
 
     <script th:inline="javascript">
     $(document).ready(function() {
