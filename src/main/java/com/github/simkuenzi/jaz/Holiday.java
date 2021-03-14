@@ -49,6 +49,6 @@ public class Holiday implements Comparable<Holiday> {
     }
 
     private String getText() {
-        return String.format("%s am %s", name, date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+        return String.format("%s am %s", name, date.format(DateTimeFormatter.ofPattern("EEEE, dd.MM.yyyy")));
     }
 }

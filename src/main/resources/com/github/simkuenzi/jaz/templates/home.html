@@ -25,17 +25,31 @@
                 <h2>Ausnahmen</h2>
             </div>
             <div class="form-row">
-                <div class="form-label"><label for="exceptionDays">Anzahl Ausnahme-Tage</label></div>
-                <div class="form-input">
-                    <input id="exceptionDays" name="exceptionDays" type="text" th:value="${exceptionDays}"/>
-                </div>
-            </div>
-            <div class="form-row">
                 <div class="form-label"><label for="holidays">Feiertage</label></div>
                 <div class="form-input">
                     <select id="holidays" name="holidays" multiple size="10">
-                        <option th:each="hd : ${holidayItems}" th:text="${hd.text}" th:value="${#temporals.format(hd.value, 'yyyy-MM-dd')}" th:selected="${hd.selected}">Feiertag</option>
+                        <option th:each="hd : ${holidayItems}" th:text="${hd.text}"
+                                th:value="${#temporals.format(hd.value, 'yyyy-MM-dd')}" th:selected="${hd.selected}">
+                            Feiertag
+                        </option>
                     </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <label for="companyHolidays" th:inline="text">
+                        Betriebsferien vom [[${#temporals.format(companyHolidaysBegin, 'EEEE, d.M.y')}]] bis
+                        [[${#temporals.format(companyHolidaysEnd, 'EEEE, d.M.y')}]]
+                    </label>
+                </div>
+                <div class="form-input">
+                    <input id="companyHolidays" name="companyHolidays" type="checkbox" th:checked="${companyHolidays}"/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label"><label for="exceptionDays">Anzahl weitere Ausnahme-Tage</label></div>
+                <div class="form-input">
+                    <input id="exceptionDays" name="exceptionDays" type="text" th:value="${exceptionDays}"/>
                 </div>
             </div>
         </div>
@@ -45,7 +59,7 @@
             </div>
             <div class="form-row">
                 <div class="form-label"><label for="hours">Stunden pro Tag</label></div>
-                <div class="form-input"><input id="hours" name="hours" type="text" th:value="${hours}" /></div>
+                <div class="form-input"><input id="hours" name="hours" type="text" th:value="${hours}"/></div>
             </div>
             <div class="form-row">
                 <div class="form-label"><label>Arbeitstage</label></div>

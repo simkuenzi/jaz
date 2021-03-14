@@ -27,8 +27,11 @@ public class HomePage {
     public void show(Map<String, Object> vars) {
         vars.put("year", year());
         vars.put("holidayItems", holidayItems());
-        vars.put("exceptionDays", exceptionDays());
         vars.put("selectedHolidays", selectedHolidays());
+        vars.put("companyHolidaysBegin", companyHolidaysBegin());
+        vars.put("companyHolidaysEnd", companyHolidaysEnd());
+        vars.put("companyHolidays", companyHolidays());
+        vars.put("exceptionDays", exceptionDays());
         vars.put("hours", hours());
         vars.put("monday", monday());
         vars.put("tuesday", tuesday());
@@ -40,12 +43,12 @@ public class HomePage {
         vars.put("jazHours", jazHours());
     }
 
-    private List<SelectItem<LocalDate>> holidayItems() {
-        return holidays.get().stream().map(hd -> hd.asItem(selectedHolidays())).collect(Collectors.toList());
-    }
-
     private int exceptionDays() {
         return Integer.parseInt(Objects.requireNonNull(context.formParam("exceptionDays", "0")));
+    }
+
+    private List<SelectItem<LocalDate>> holidayItems() {
+        return holidays.get().stream().map(hd -> hd.asItem(selectedHolidays())).collect(Collectors.toList());
     }
 
     private List<LocalDate> selectedHolidays() {
@@ -56,39 +59,51 @@ public class HomePage {
                 holidays.get().stream().map(Holiday::asDate).collect(Collectors.toList());
     }
 
+    private LocalDate companyHolidaysBegin() {
+        return LocalDate.of(year(), 12, 27);
+    }
+
+    private LocalDate companyHolidaysEnd() {
+        return LocalDate.of(year(), 12, 31);
+    }
+
+    private boolean companyHolidays() {
+        return checkboxField("companyHolidays", true);
+    }
+
     private int hours() {
         return Integer.parseInt(Objects.requireNonNull(context.formParam("hours", "8")));
     }
 
     private boolean monday() {
-        return weekdayField("monday", true);
+        return checkboxField("monday", true);
     }
 
     private boolean tuesday() {
-        return weekdayField("tuesday", true);
+        return checkboxField("tuesday", true);
     }
 
     private boolean wednesday() {
-        return weekdayField("wednesday", true);
+        return checkboxField("wednesday", true);
     }
 
     private boolean thursday() {
-        return weekdayField("thursday", true);
+        return checkboxField("thursday", true);
     }
 
     private boolean friday() {
-        return weekdayField("friday", false);
+        return checkboxField("friday", false);
     }
 
     private boolean saturday() {
-        return weekdayField("saturday", false);
+        return checkboxField("saturday", false);
     }
 
     private boolean sunday() {
-        return weekdayField("sunday", false);
+        return checkboxField("sunday", false);
     }
 
-    private boolean weekdayField(String name, boolean defaultValue) {
+    private boolean checkboxField(String name, boolean defaultValue) {
         if (context.method().equalsIgnoreCase("post")) {
             return context.formParam(name) != null;
         }
@@ -115,7 +130,8 @@ public class HomePage {
                 case SATURDAY -> saturday();
                 case SUNDAY -> sunday();
             };
-            if (workWeekday && !selectedHolidays().contains(date)) {
+            if (workWeekday && !selectedHolidays().contains(date) &&
+                    (companyHolidaysBegin().isAfter(date) || companyHolidaysEnd().isBefore(date))) {
                 days++;
             }
         }
