@@ -31,20 +31,12 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-label"><label for="holiday">Feiertage</label></div>
+                <div class="form-label"><label for="holidays">Feiertage</label></div>
                 <div class="form-input">
-                    <select id="holiday" name="holiday">
-                        <option th:each="hd : ${holidays}" th:text="${hd}" th:value="${hd}" th:selected="${holiday == hd}">Feiertag</option>
+                    <select id="holidays" name="holidays" multiple>
+                        <option th:each="hd : ${holidayItems}" th:text="${hd.text}" th:value="${#temporals.format(hd.value, 'yyyy-MM-dd')}" th:selected="${hd.selected}">Feiertag</option>
                     </select>
                 </div>
-            </div>
-            <div class="form-row-action">
-                <button type="button" name="add-holiday-date" onclick="resolveHoliday()">+</button>
-            </div>
-            <div class="form-row">
-                <div class="form-label"></div>
-                <div class="form-input" id="dates">&nbsp;</div>
-                <input type="hidden" id="holidayExceptions" name="holidayExceptions" th:value="${holidayExceptions}">
             </div>
         </div>
         <div class="form-section">
@@ -97,38 +89,6 @@
     <p th:inline="text">
         Im Jahr [[${year}]] würdest du [[${jazHours}]] Stunden arbeiten.
     </p>
-
-    <script th:inline="javascript">
-    $(document).ready(function() {
-        updateHolidayExceptions();
-    });
-
-    function resolveHoliday() {
-        var year = /*[[${year}]]*/ 1989;
-        $.post('holiday?year=' + year, '{ "text": "' + $('#holiday').val() + '" }', function(data) {
-            if (data.valid) {
-                var holidayExceptions = JSON.parse($('#holidayExceptions').val());
-                holidayExceptions.list.push(data);
-                $('#holidayExceptions').val(JSON.stringify(holidayExceptions));
-                updateHolidayExceptions()
-            }
-        });
-    }
-
-    function updateHolidayExceptions() {
-        var holidayExceptions = JSON.parse($('#holidayExceptions').val());
-        var datesText = "";
-        for (var i = 0; i < holidayExceptions.list.length; i++) {
-            datesText += holidayExceptions.list[i].text;
-            if (i < holidayExceptions.list.length - 1) {
-                datesText += ", ";
-            }
-        }
-        $("#dates").text(datesText);
-    }
-
-
-    </script>
 
 </div>
 

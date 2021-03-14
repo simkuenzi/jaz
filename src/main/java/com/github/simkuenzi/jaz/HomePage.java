@@ -1,9 +1,9 @@
 package com.github.simkuenzi.jaz;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.http.Context;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Locale;
@@ -13,19 +13,16 @@ import java.util.stream.Collectors;
 
 public class HomePage {
     private final Context context;
-    private final ObjectMapper objectMapper;
 
-    public HomePage(Context context, ObjectMapper objectMapper) {
+    public HomePage(Context context) {
         this.context = context;
-        this.objectMapper = objectMapper;
     }
 
     public void show(Map<String, Object> vars) throws Exception {
         vars.put("year", year());
-        vars.put("holidays", holidayResolution().validExpressions());
+        vars.put("holidayItems", holidayItems());
         vars.put("exceptionDays", exceptionDays());
-        vars.put("holiday", holiday());
-        vars.put("holidayExceptions", objectMapper.writeValueAsString(holidayExceptions()));
+        vars.put("selectedHolidays", selectedHolidays());
         vars.put("hours", hours());
         vars.put("monday", monday());
         vars.put("tuesday", tuesday());
@@ -37,22 +34,22 @@ public class HomePage {
         vars.put("jazHours", jazHours());
     }
 
-    public HolidayExpression.Parsed resolveHoliday() throws Exception {
-        return objectMapper
-                .readValue(context.body(), HolidayExpression.class)
-                .parse(holidayResolution());
+    private Holidays holidays() {
+        return new FeiertageApiDe(year());
+    }
+
+    private List<SelectItem<LocalDate>> holidayItems() throws Exception {
+        return holidays().get().stream().map(hd -> hd.asItem(selectedHolidays())).collect(Collectors.toList());
     }
 
     private int exceptionDays() {
         return Integer.parseInt(Objects.requireNonNull(context.formParam("exceptionDays", "0")));
     }
 
-    private String holiday() {
-        return Objects.requireNonNull(context.formParam("holiday", ""));
-    }
-
-    private HolidayExceptions holidayExceptions() throws Exception {
-        return objectMapper.readValue(context.formParam("holidayExceptions", "{ \"list\": [] }"), HolidayExceptions.class);
+    private List<LocalDate> selectedHolidays() {
+        return Objects.requireNonNull(context.formParams("holidays")).stream()
+                .map(s -> LocalDate.parse(s, DateTimeFormatter.ISO_LOCAL_DATE))
+                .collect(Collectors.toList());
     }
 
     private int hours() {
@@ -99,11 +96,9 @@ public class HomePage {
         return yearParam != null ? Integer.parseInt(yearParam) : LocalDate.now().getYear();
     }
 
-    private int jazHours() throws Exception {
+    private int jazHours() {
         LocalDate firstDay = LocalDate.now().withYear(year()).with(TemporalAdjusters.firstDayOfYear());
         LocalDate lastDay = LocalDate.now().withYear(year()).with(TemporalAdjusters.lastDayOfYear());
-        List<LocalDate> holidays = holidayExceptions().getList().stream().map(
-                HolidayExceptions.HolidayException::getDate).collect(Collectors.toList());
 
         int days = 0;
         for (LocalDate date = firstDay; !date.isAfter(lastDay); date = date.plusDays(1)) {
@@ -116,15 +111,11 @@ public class HomePage {
                 case SATURDAY -> saturday();
                 case SUNDAY -> sunday();
             };
-            if (workWeekday && !holidays.contains(date)) {
+            if (workWeekday && !selectedHolidays().contains(date)) {
                 days++;
             }
         }
 
         return (days - exceptionDays()) * hours();
-    }
-
-    private HolidayResolution holidayResolution() {
-        return new FeiertageApiDe(year());
     }
 }

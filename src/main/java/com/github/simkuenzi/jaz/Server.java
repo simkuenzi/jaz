@@ -12,6 +12,7 @@ import io.javalin.plugin.rendering.FileRenderer;
 import io.javalin.plugin.rendering.JavalinRenderer;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
@@ -55,8 +56,7 @@ public class Server {
                 .start(port)
 
                 .get("/", ctx -> ctx.render("home.html", model(ctx)))
-                .post("/", ctx -> ctx.render("home.html", model(ctx)))
-                .post("/holiday", ctx -> ctx.json(new HomePage(ctx, objectMapper).resolveHoliday()));
+                .post("/", ctx -> ctx.render("home.html", model(ctx)));
     }
 
     private static Map<String, Object> model(Context ctx) throws Exception {
@@ -64,7 +64,7 @@ public class Server {
         Properties versionProps = new Properties();
         versionProps.load(Server.class.getResourceAsStream("version.properties"));
         vars.put("version", versionProps.getProperty("version"));
-        HomePage homePage = new HomePage(ctx, objectMapper());
+        HomePage homePage = new HomePage(ctx);
         homePage.show(vars);
         return vars;
     }
@@ -77,6 +77,7 @@ public class Server {
         templateResolver.setForceTemplateMode(true);
         TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
+        templateEngine.addDialect(new Java8TimeDialect());
         return (filePath, model, context) -> {
             WebContext thymeleafContext = new WebContext(context.req, context.res, context.req.getServletContext(), context.req.getLocale());
             thymeleafContext.setVariables(model);

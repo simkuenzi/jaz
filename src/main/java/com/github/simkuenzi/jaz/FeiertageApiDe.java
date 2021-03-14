@@ -9,10 +9,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Optional;
+import java.util.List;
 
-public class FeiertageApiDe implements HolidayResolution {
+public class FeiertageApiDe implements Holidays {
     private final int year;
 
     public FeiertageApiDe(int year) {
@@ -20,18 +21,18 @@ public class FeiertageApiDe implements HolidayResolution {
     }
 
     @Override
-    public Iterator<String> validExpressions() throws Exception {
-        return new ObjectMapper().readTree(loadHolidays(year)).fieldNames();
-    }
-
-    @Override
-    public Optional<LocalDate> resolve(String expression) throws Exception {
-        JsonNode holidays = new ObjectMapper().readTree(loadHolidays(year));
-        if (holidays.has(expression)) {
-            String dateText = holidays.get(expression).get("datum").asText();
-            return Optional.of(LocalDate.parse(dateText, DateTimeFormatter.ISO_LOCAL_DATE));
+    public List<Holiday> get() throws Exception {
+        List<Holiday> holidays = new ArrayList<>();
+        JsonNode json = new ObjectMapper().readTree(loadHolidays(year));
+        Iterator<String> holidayNames = json.fieldNames();
+        while (holidayNames.hasNext()) {
+            String holidayName = holidayNames.next();
+            String dateText = json.get(holidayName).get("datum").asText();
+            LocalDate date = LocalDate.parse(dateText, DateTimeFormatter.ISO_LOCAL_DATE);
+            holidays.add(new Holiday(holidayName, date));
         }
-        return Optional.empty();
+
+        return holidays;
     }
 
     private String loadHolidays(int year) throws java.io.IOException, InterruptedException {
