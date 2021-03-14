@@ -33,7 +33,7 @@
             <div class="form-row">
                 <div class="form-label"><label for="holidays">Feiertage</label></div>
                 <div class="form-input">
-                    <select id="holidays" name="holidays" multiple>
+                    <select id="holidays" name="holidays" multiple size="10">
                         <option th:each="hd : ${holidayItems}" th:text="${hd.text}" th:value="${#temporals.format(hd.value, 'yyyy-MM-dd')}" th:selected="${hd.selected}">Feiertag</option>
                     </select>
                 </div>

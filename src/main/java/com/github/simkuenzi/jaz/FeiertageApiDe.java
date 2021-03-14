@@ -21,9 +21,14 @@ public class FeiertageApiDe implements Holidays {
     }
 
     @Override
-    public List<Holiday> get() throws Exception {
+    public List<Holiday> get() {
         List<Holiday> holidays = new ArrayList<>();
-        JsonNode json = new ObjectMapper().readTree(loadHolidays(year));
+        JsonNode json;
+        try {
+            json = new ObjectMapper().readTree(loadHolidays(year));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         Iterator<String> holidayNames = json.fieldNames();
         while (holidayNames.hasNext()) {
             String holidayName = holidayNames.next();

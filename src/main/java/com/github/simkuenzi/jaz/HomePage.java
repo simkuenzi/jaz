@@ -5,20 +5,26 @@ import io.javalin.http.Context;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class HomePage {
     private final Context context;
+    private final Holidays holidays;
 
     public HomePage(Context context) {
         this.context = context;
+        holidays = new CachedHolidays(
+                new AdaptedHolidays(
+                        new FeiertageApiDe(year()),
+                        Arrays.asList(
+                                new Holiday("Berchtoldstag", LocalDate.of(year(), 1, 2)),
+                                new Holiday("Nationalfeiertag", LocalDate.of(year(), 8, 1))),
+                        Collections.singletonList(LocalDate.of(year(), 10, 3))
+                ));
     }
 
-    public void show(Map<String, Object> vars) throws Exception {
+    public void show(Map<String, Object> vars) {
         vars.put("year", year());
         vars.put("holidayItems", holidayItems());
         vars.put("exceptionDays", exceptionDays());
@@ -34,12 +40,8 @@ public class HomePage {
         vars.put("jazHours", jazHours());
     }
 
-    private Holidays holidays() {
-        return new FeiertageApiDe(year());
-    }
-
-    private List<SelectItem<LocalDate>> holidayItems() throws Exception {
-        return holidays().get().stream().map(hd -> hd.asItem(selectedHolidays())).collect(Collectors.toList());
+    private List<SelectItem<LocalDate>> holidayItems() {
+        return holidays.get().stream().map(hd -> hd.asItem(selectedHolidays())).collect(Collectors.toList());
     }
 
     private int exceptionDays() {
@@ -47,9 +49,11 @@ public class HomePage {
     }
 
     private List<LocalDate> selectedHolidays() {
-        return Objects.requireNonNull(context.formParams("holidays")).stream()
-                .map(s -> LocalDate.parse(s, DateTimeFormatter.ISO_LOCAL_DATE))
-                .collect(Collectors.toList());
+        return context.method().equalsIgnoreCase("post") ?
+                Objects.requireNonNull(context.formParams("holidays")).stream()
+                        .map(s -> LocalDate.parse(s, DateTimeFormatter.ISO_LOCAL_DATE))
+                        .collect(Collectors.toList()) :
+                holidays.get().stream().map(Holiday::asDate).collect(Collectors.toList());
     }
 
     private int hours() {
@@ -85,7 +89,7 @@ public class HomePage {
     }
 
     private boolean weekdayField(String name, boolean defaultValue) {
-        if (context.method().toLowerCase(Locale.ROOT).equals("post")) {
+        if (context.method().equalsIgnoreCase("post")) {
             return context.formParam(name) != null;
         }
         return defaultValue;

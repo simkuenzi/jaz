@@ -1,10 +1,13 @@
 package com.github.simkuenzi.jaz;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.List;
 
-public class Holiday {
+public class Holiday implements Comparable<Holiday> {
     private final String name;
     private final LocalDate date;
 
@@ -30,6 +33,19 @@ public class Holiday {
                 return selectedValues.contains(date);
             }
         };
+    }
+
+    public LocalDate asDate() {
+        return date;
+    }
+
+    public boolean containedBy(List<LocalDate> l) {
+        return l.contains(date);
+    }
+
+    @Override
+    public int compareTo(@NotNull Holiday o) {
+        return date.compareTo(o.date);
     }
 
     private String getText() {
