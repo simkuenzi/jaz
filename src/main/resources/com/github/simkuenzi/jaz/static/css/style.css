@@ -100,7 +100,6 @@
     width: 75%;
     float: right;
     margin-top: 6px;
-    background-color: lightgray;
     border-radius: 4px;
 }
 
@@ -108,7 +107,6 @@
     width: 100%;
     float: right;
     margin-top: 6px;
-    background-color: lightgray;
     border-radius: 4px;
 }
 
@@ -230,8 +228,21 @@ ul {
   .form {
       width: 100%;
   }
-  button, input[type=submit], input[type=text], input[type=password], textarea, .input, select, label, body, .form-input-message {
+  h1 {
     font-size: 46pt;
+  }
+  h2 {
+    font-size: 42pt;
+  }
+  button, input[type=text], input[type=password], input[type=checkbox], textarea, .input, label, body, .form-input-message, a, span, div, p {
+    font-size: 38pt;
+  }
+  select {
+    font-size: 32pt;
+  }
+  input[type=checkbox] {
+    height: 30pt;
+    width: 30pt;
   }
   .form-input-message {
     height: 48pt;
