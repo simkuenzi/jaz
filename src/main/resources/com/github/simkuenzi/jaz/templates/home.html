@@ -1,63 +1,92 @@
 <html th:replace="~{layout.html :: layout(~{::title}, ~{::div})}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Overview - Sketchbook</title>
+    <title>Overview - JAZ</title>
     <link rel="stylesheet" href="../static/css/style.css">
 </head>
 <body class="body">
-<div class="content" >
+<div class="content">
 
     <div>
         <h1>JAZ</h1>
     </div>
 
-    <div class="form">
-        <div class="form-row">
-            <div class="form-label"><label for="date">Datum</label></div>
-            <div class="form-input">
-                <input id="date" name="date" type="text" />
-            </div>
-        </div>
-        <div class="form-row-action">
-            <button type="button" name="add-date">+</button>
-        </div>
+    <div>
+        <ul class="vertical-list">
+            <li><a th:href="@{/(year=${year - 1})}" href="#" th:text="${year - 1}">1988</a></li>
+            <li><b><a th:href="@{/(year=${year})}" href="#" th:text="${year}">1989</a></b></li>
+            <li><a th:href="@{/(year=${year + 1})}" href="#" th:text="${year + 1}">1990</a></li>
+        </ul>
     </div>
-    <div class="form">
-        <div class="form-row">
-            <div class="form-label"><label for="holiday">Feiertag</label></div>
-            <div class="form-input">
-                <select id="holiday" name="holiday"></select>
-            </div>
-        </div>
-        <div class="form-row-action">
-            <button type="button" name="add-holiday-date">+</button>
-        </div>
-    </div>
+
     <form method="post">
-        <div class="form-row">
-            <div class="form-label"><label>Ausnahmen</label></div>
-            <div class="form-input">
-                Liste der Datümmer
+        <div class="form-section">
+            <div class="form-row">
+                <h2>Ausnahmen</h2>
             </div>
-            <input type="hidden" id="exceptions" name="">
+            <div class="form-row">
+                <div class="form-label"><label for="exceptionDays">Anzahl Ausnahme-Tage</label></div>
+                <div class="form-input">
+                    <input id="exceptionDays" name="exceptionDays" type="text" th:value="${exceptionDays}"/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label"><label for="holiday">Feiertage</label></div>
+                <div class="form-input">
+                    <select id="holiday" name="holiday">
+                        <option th:each="hd : ${holidays}" th:text="${hd}" th:value="${hd}" th:selected="${holiday == hd}">Feiertag</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row-action">
+                <button type="button" name="add-holiday-date" onclick="resolveHoliday()">+</button>
+            </div>
+            <div class="form-row">
+                <div class="form-label"></div>
+                <div class="form-input" id="dates">&nbsp;</div>
+                <input type="hidden" id="holidayExceptions" name="holidayExceptions" th:value="${holidayExceptions}">
+            </div>
         </div>
-        <div class="form-row">
-            <div class="form-label"><label>Arbeitstage</label></div>
-            <div class="form-input">
-                <label for="monday">Montag</label>
-                <input id="monday" name="monday" type="checkbox">
-                <label for="tuesday">Dienstag</label>
-                <input id="tuesday" name="tuesday" type="checkbox">
-                <label for="wednesday">Mittwoch</label>
-                <input id="wednesday" name="wednesday" type="checkbox">
-                <label for="thursday">Donnerstag</label>
-                <input id="thursday" name="thursday" type="checkbox">
-                <label for="friday">Freitag</label>
-                <input id="friday" name="friday" type="checkbox">
-                <label for="saturday">Samstag</label>
-                <input id="saturday" name="saturday" type="checkbox">
-                <label for="sunday">Sonntag</label>
-                <input id="sunday" name="sunday" type="checkbox">
+        <div class="form-section">
+            <div class="form-row">
+                <h2>Pensum</h2>
+            </div>
+            <div class="form-row">
+                <div class="form-label"><label for="hours">Stunden pro Tag</label></div>
+                <div class="form-input"><input id="hours" name="hours" type="text" th:value="${hours}" /></div>
+            </div>
+            <div class="form-row">
+                <div class="form-label"><label>Arbeitstage</label></div>
+                <div class="form-input">
+                    <nobr>
+                        <input id="monday" name="monday" type="checkbox" checked>
+                        <label for="monday">Montag</label>
+                    </nobr>
+                    <nobr>
+                        <input id="tuesday" name="tuesday" type="checkbox" checked>
+                        <label for="tuesday">Dienstag</label>
+                    </nobr>
+                    <nobr>
+                        <input id="wednesday" name="wednesday" type="checkbox" checked>
+                        <label for="wednesday">Mittwoch</label>
+                    </nobr>
+                    <nobr>
+                        <input id="thursday" name="thursday" type="checkbox" checked>
+                        <label for="thursday">Donnerstag</label>
+                    </nobr>
+                    <nobr>
+                        <input id="friday" name="friday" type="checkbox">
+                        <label for="friday">Freitag</label>
+                    </nobr>
+                    <nobr>
+                        <input id="saturday" name="saturday" type="checkbox">
+                        <label for="saturday">Samstag</label>
+                    </nobr>
+                    <nobr>
+                        <input id="sunday" name="sunday" type="checkbox">
+                        <label for="sunday">Sonntag</label>
+                    </nobr>
+                </div>
             </div>
         </div>
         <div class="form-row-action">
@@ -65,7 +94,39 @@
         </div>
     </form>
 
+    <script th:inline="javascript">
+    $(document).ready(function() {
+        updateHolidayExceptions();
+    });
+
+    function resolveHoliday() {
+        var year = /*[[${year}]]*/ 1989;
+        $.post('holiday?year=' + year, '{ "text": "' + $('#holiday').val() + '" }', function(data) {
+            if (data.valid) {
+                var holidayExceptions = JSON.parse($('#holidayExceptions').val());
+                holidayExceptions.list.push(data);
+                $('#holidayExceptions').val(JSON.stringify(holidayExceptions));
+                updateHolidayExceptions()
+            }
+        });
+    }
+
+    function updateHolidayExceptions() {
+        var holidayExceptions = JSON.parse($('#holidayExceptions').val());
+        var datesText = "";
+        for (var i = 0; i < holidayExceptions.list.length; i++) {
+            datesText += holidayExceptions.list[i].text;
+            if (i < holidayExceptions.list.length - 1) {
+                datesText += ", ";
+            }
+        }
+        $("#dates").text(datesText);
+    }
+
+
+    </script>
 
 </div>
+
 </body>
 </html>

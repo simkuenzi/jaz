@@ -219,6 +219,10 @@ ul {
     padding-left: 0;
 }
 
+.vertical-list > li {
+    display: inline;
+}
+
 @media screen and (-webkit-min-device-pixel-ratio: 2) {
   .form-label, .form-input, input[type=submit], button {
     width: 100%;
