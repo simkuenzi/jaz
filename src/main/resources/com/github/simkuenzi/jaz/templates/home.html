@@ -95,6 +95,7 @@
                 </div>
             </div>
         </div>
+        targetPerMonths
         <div class="form-row-action">
             <button type="submit" name="calculate">JAZ Berechnen</button>
         </div>
@@ -103,6 +104,21 @@
     <p th:inline="text">
         Im Jahr [[${year}]] würdest du [[${jazHours}]] Stunden arbeiten.
     </p>
+
+    <table>
+        <thead>
+            <tr>
+                <td>Monat</td>
+                <td>Stunden</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="m : ${targetPerMonths}">
+                <td th:text="${m.month}">Januar</td>
+                <td th:text="${m.hours}">128</td>
+            </tr>
+        </tbody>
+    </table>
 
 </div>
 

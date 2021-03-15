@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class HomePage {
     private final Context context;
@@ -41,6 +43,7 @@ public class HomePage {
         vars.put("saturday", saturday());
         vars.put("sunday", sunday());
         vars.put("jazHours", jazHours());
+        vars.put("targetPerMonths", targetPerMonths().collect(Collectors.toList()));
     }
 
     private int exceptionDays() {
@@ -116,8 +119,17 @@ public class HomePage {
     }
 
     private int jazHours() {
-        LocalDate firstDay = LocalDate.now().withYear(year()).with(TemporalAdjusters.firstDayOfYear());
-        LocalDate lastDay = LocalDate.now().withYear(year()).with(TemporalAdjusters.lastDayOfYear());
+        return targetPerMonths().mapToInt(TargetPerMonth::getHours).sum() - exceptionDays();
+    }
+
+    private Stream<TargetPerMonth> targetPerMonths() {
+        return IntStream.rangeClosed(1, 12).mapToObj(this::targetPerMonth);
+    }
+
+    private TargetPerMonth targetPerMonth(int month) {
+        LocalDate monthDate = LocalDate.now().withYear(year()).withMonth(month);
+        LocalDate firstDay = monthDate.with(TemporalAdjusters.firstDayOfMonth());
+        LocalDate lastDay = monthDate.with(TemporalAdjusters.lastDayOfMonth());
 
         int days = 0;
         for (LocalDate date = firstDay; !date.isAfter(lastDay); date = date.plusDays(1)) {
@@ -136,6 +148,17 @@ public class HomePage {
             }
         }
 
-        return (days - exceptionDays()) * hours();
+        int finalDays = days;
+        return new TargetPerMonth() {
+            @Override
+            public String getMonth() {
+                return monthDate.format(DateTimeFormatter.ofPattern("MMMM"));
+            }
+
+            @Override
+            public int getHours() {
+                return finalDays * hours();
+            }
+        };
     }
 }

@@ -221,6 +221,26 @@ ul {
     display: inline;
 }
 
+table {
+    border-collapse: collapse;
+    font-size: 16pt;
+}
+
+thead > tr {
+    background-color: var(--dark);
+    font-weight: bold;
+    color: white;
+}
+
+tbody > tr:nth-child(odd) {
+    background-color: var(--light);
+}
+
+td {
+    padding: 5px 10px 5px 10px;
+}
+
+
 @media screen and (-webkit-min-device-pixel-ratio: 2) {
   .form-label, .form-input, input[type=submit], button {
     width: 100%;
@@ -234,7 +254,7 @@ ul {
   h2 {
     font-size: 42pt;
   }
-  button, input[type=text], input[type=password], input[type=checkbox], textarea, .input, label, body, .form-input-message, a, span, div, p {
+  button, input[type=text], input[type=password], input[type=checkbox], textarea, .input, label, body, .form-input-message, a, span, div, p, table {
     font-size: 38pt;
   }
   select {
