@@ -82,12 +82,16 @@
     margin-bottom: 20px;
 }
 
-.form-section {
+fieldset {
     border-style: solid;
     border-width: 1px;
     border-color: var(--dark);
     padding: 4px;
     margin: 4px;
+}
+
+legend {
+    font-weight: bold;
 }
 
 .form-label {

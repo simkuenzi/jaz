@@ -20,10 +20,8 @@
     </div>
 
     <form method="post">
-        <div class="form-section">
-            <div class="form-row">
-                <h2>Ausnahmen</h2>
-            </div>
+        <fieldset class="form-section">
+            <legend>Ausnahmen</legend>
             <div class="form-row">
                 <div class="form-label"><label for="holidays">Feiertage</label></div>
                 <div class="form-input">
@@ -52,11 +50,9 @@
                     <input id="exceptionDays" name="exceptionDays" type="text" th:value="${exceptionDays}"/>
                 </div>
             </div>
-        </div>
-        <div class="form-section">
-            <div class="form-row">
-                <h2>Pensum</h2>
-            </div>
+        </fieldset>
+        <fieldset class="form-section">
+            <legend>Pensum</legend>
             <div class="form-row">
                 <div class="form-label"><label for="hours">Stunden pro Tag</label></div>
                 <div class="form-input"><input id="hours" name="hours" type="text" th:value="${hours}"/></div>
@@ -94,7 +90,7 @@
                     </nobr>
                 </div>
             </div>
-        </div>
+        </fieldset>
         targetPerMonths
         <div class="form-row-action">
             <button type="submit" name="calculate">JAZ Berechnen</button>
