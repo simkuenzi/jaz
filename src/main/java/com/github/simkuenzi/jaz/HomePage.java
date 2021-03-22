@@ -133,7 +133,7 @@ public class HomePage {
 
         int days = 0;
         for (LocalDate date = firstDay; !date.isAfter(lastDay); date = date.plusDays(1)) {
-            boolean workWeekday = switch (date.getDayOfWeek()) {
+            boolean isWorkWeekday = switch (date.getDayOfWeek()) {
                 case MONDAY -> monday();
                 case TUESDAY -> tuesday();
                 case WEDNESDAY -> wednesday();
@@ -142,8 +142,13 @@ public class HomePage {
                 case SATURDAY -> saturday();
                 case SUNDAY -> sunday();
             };
-            if (workWeekday && !selectedHolidays().contains(date) &&
-                    (companyHolidaysBegin().isAfter(date) || companyHolidaysEnd().isBefore(date))) {
+
+            boolean isHoliday = selectedHolidays().contains(date);
+
+            boolean isCompanyHoliday = companyHolidays() && !date.isBefore(companyHolidaysBegin())
+                    && !date.isAfter(companyHolidaysEnd());
+
+            if (isWorkWeekday && !isHoliday && !isCompanyHoliday) {
                 days++;
             }
         }
